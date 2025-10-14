@@ -88,7 +88,7 @@ function updateAllComparisons() {
 
         // Create comparison card
         const card = document.createElement('div');
-        card.className = 'key-comparison-card';
+        card.className = `key-comparison-card popularity-${relatedKey.popularity || 'medium'}`;
 
         // Header with key info
         const header = document.createElement('div');
@@ -103,7 +103,19 @@ function updateAllComparisons() {
 
         const relationship = document.createElement('div');
         relationship.className = 'key-comparison-relationship';
-        relationship.textContent = relatedKey.relationship;
+
+        // Add popularity badge
+        const popularityLabels = {
+            'high': 'Very Common',
+            'medium': 'Common',
+            'low': 'Uncommon'
+        };
+        const popularityLabel = popularityLabels[relatedKey.popularity] || 'Common';
+
+        relationship.innerHTML = `
+            ${relatedKey.relationship}
+            <span class="popularity-badge ${relatedKey.popularity}">${popularityLabel}</span>
+        `;
 
         const description = document.createElement('div');
         description.className = 'key-comparison-description';

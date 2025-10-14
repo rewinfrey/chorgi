@@ -4,14 +4,17 @@
  * Identifies common chords between two scales for smooth modulation
  */
 
-import { generateDiatonicChords } from '../core/music-theory.js';
+import { generateDiatonicChords, noteToMidi } from '../core/music-theory.js';
 
 /**
  * Normalize chord notes to a set of pitch classes (0-11)
  * This allows us to compare chords regardless of octave
  */
 function normalizeChordNotes(chord) {
-    return new Set(chord.notes.map(note => note % 12));
+    return new Set(chord.notes.map(note => {
+        const midi = noteToMidi(note);
+        return midi % 12;
+    }));
 }
 
 /**
@@ -67,7 +70,7 @@ export function findPivotChords(primaryRoot, primaryScale, secondaryRoot, second
         Object.entries(secondaryChords).forEach(([secondaryKey, secondaryChord]) => {
             if (areChordsEquivalent(primaryChord, secondaryChord)) {
                 pivotChords.push({
-                    chordName: primaryChord.name,
+                    chordName: primaryKey,  // Use the actual chord name (like "Am7")
                     primaryKey: primaryKey,
                     secondaryKey: secondaryKey,
                     primaryFunction: getFunctionDescription(primaryKey, primaryScale),

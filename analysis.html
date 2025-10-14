@@ -165,6 +165,47 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
+        /* Popularity-based styling */
+        .key-comparison-card.popularity-high {
+            border-width: 3px;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .key-comparison-card.popularity-medium {
+            border-color: #a89eea;
+            opacity: 0.95;
+        }
+
+        .key-comparison-card.popularity-low {
+            border-color: #d0c9f0;
+            opacity: 0.85;
+        }
+
+        .popularity-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .popularity-badge.high {
+            background: #667eea;
+            color: white;
+        }
+
+        .popularity-badge.medium {
+            background: #a89eea;
+            color: white;
+        }
+
+        .popularity-badge.low {
+            background: #d0c9f0;
+            color: #666;
+        }
+
         .key-comparison-header {
             display: flex;
             justify-content: space-between;
