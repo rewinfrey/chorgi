@@ -9,10 +9,17 @@ import { generateDiatonicChords, SCALES } from './music-theory.js';
 class StateManager {
     constructor() {
         this.state = {
+            // Primary scale
             currentScale: 'major',
             currentRoot: 'C',
             currentChord: null,
-            diatonicChords: null
+            diatonicChords: null,
+
+            // Secondary scale for comparison (Phase 2)
+            compareMode: false,
+            secondaryScale: null,
+            secondaryRoot: null,
+            secondaryChords: null
         };
 
         // Initialize chords
@@ -22,7 +29,8 @@ class StateManager {
         // Listeners for state changes
         this.listeners = {
             'scale-changed': [],
-            'chord-changed': []
+            'chord-changed': [],
+            'compare-mode-changed': []
         };
     }
 
@@ -66,6 +74,48 @@ class StateManager {
     setChord(chordKey) {
         this.state.currentChord = chordKey;
         this.emit('chord-changed', this.getCurrentChord());
+    }
+
+    // Compare mode methods (Phase 2)
+    setCompareMode(enabled) {
+        this.state.compareMode = enabled;
+        this.emit('compare-mode-changed', {
+            enabled,
+            secondaryScale: this.getSecondaryScale(),
+            secondaryChords: this.state.secondaryChords
+        });
+    }
+
+    isCompareMode() {
+        return this.state.compareMode;
+    }
+
+    setSecondaryScale(root, scaleType) {
+        this.state.secondaryRoot = root;
+        this.state.secondaryScale = scaleType;
+        this.state.secondaryChords = generateDiatonicChords(root, scaleType);
+
+        this.emit('compare-mode-changed', {
+            enabled: this.state.compareMode,
+            root,
+            scaleType,
+            chords: this.state.secondaryChords
+        });
+    }
+
+    getSecondaryScale() {
+        if (!this.state.secondaryRoot || !this.state.secondaryScale) {
+            return null;
+        }
+        return {
+            root: this.state.secondaryRoot,
+            type: this.state.secondaryScale,
+            name: SCALES[this.state.secondaryScale].name
+        };
+    }
+
+    getSecondaryChords() {
+        return this.state.secondaryChords;
     }
 
     // Event system

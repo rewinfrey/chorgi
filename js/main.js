@@ -44,6 +44,7 @@ function setupScaleSelectors() {
     });
 }
 
+
 /**
  * Update the scale title
  */
