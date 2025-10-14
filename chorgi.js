@@ -7,15 +7,15 @@ const NOTE_TO_MIDI = {
     'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
 };
 
-// C Major Scale Diatonic Chords
+// C Major Scale Diatonic Chords (with 7ths)
 const DIATONIC_CHORDS = {
-    'C': { name: 'C Major', notes: ['C4', 'E4', 'G4'], type: 'major', roman: 'I' },
-    'Dm': { name: 'D Minor', notes: ['D4', 'F4', 'A4'], type: 'minor', roman: 'ii' },
-    'Em': { name: 'E Minor', notes: ['E4', 'G4', 'B4'], type: 'minor', roman: 'iii' },
-    'F': { name: 'F Major', notes: ['F4', 'A4', 'C5'], type: 'major', roman: 'IV' },
-    'G': { name: 'G Major', notes: ['G4', 'B4', 'D5'], type: 'major', roman: 'V' },
-    'Am': { name: 'A Minor', notes: ['A4', 'C5', 'E5'], type: 'minor', roman: 'vi' },
-    'Bdim': { name: 'B Diminished', notes: ['B4', 'D5', 'F5'], type: 'diminished', roman: 'vii°' }
+    'Cmaj7': { name: 'C Major 7', notes: ['C4', 'E4', 'G4', 'B4'], type: 'maj7', roman: 'Imaj7' },
+    'Dm7': { name: 'D Minor 7', notes: ['D4', 'F4', 'A4', 'C5'], type: 'min7', roman: 'iim7' },
+    'Em7': { name: 'E Minor 7', notes: ['E4', 'G4', 'B4', 'D5'], type: 'min7', roman: 'iiim7' },
+    'Fmaj7': { name: 'F Major 7', notes: ['F4', 'A4', 'C5', 'E5'], type: 'maj7', roman: 'IVmaj7' },
+    'G7': { name: 'G Dominant 7', notes: ['G4', 'B4', 'D5', 'F5'], type: 'dom7', roman: 'V7' },
+    'Am7': { name: 'A Minor 7', notes: ['A4', 'C5', 'E5', 'G5'], type: 'min7', roman: 'vim7' },
+    'Bm7b5': { name: 'B Half-Diminished 7', notes: ['B4', 'D5', 'F5', 'A5'], type: 'm7b5', roman: 'viim7b5' }
 };
 
 // Guitar string tuning (standard tuning - high E to low E)
@@ -40,7 +40,7 @@ function midiToNoteName(midi, useFlats = false) {
 }
 
 // Application State
-let currentChord = 'C';
+let currentChord = 'Cmaj7';
 
 // Initialize the application
 function init() {
@@ -176,7 +176,7 @@ function drawGuitar() {
     const ctx = canvas.getContext('2d');
 
     canvas.width = 1050;
-    canvas.height = 250;
+    canvas.height = 280;
 
     const fretWidth = 70;
     const stringSpacing = 35;
@@ -281,7 +281,9 @@ function drawGuitar() {
         { degree: '3', label: '3rd' },
         { degree: 'b3', label: 'b3rd' },
         { degree: '5', label: '5th' },
-        { degree: 'b5', label: 'b5th' }
+        { degree: 'b5', label: 'b5th' },
+        { degree: '7', label: 'Maj7' },
+        { degree: 'b7', label: 'Min7' }
     ];
 
     legendItems.forEach((item, i) => {
@@ -395,9 +397,9 @@ function drawStaff() {
     const chord = DIATONIC_CHORDS[currentChord];
 
     // Draw notes
-    const noteX = startX + 150;
+    const noteX = startX + 100;
     chord.notes.forEach((noteName, index) => {
-        drawNote(ctx, noteX + index * 80, startY, noteName, lineSpacing);
+        drawNote(ctx, noteX + index * 70, startY, noteName, lineSpacing);
     });
 
     document.getElementById('staffInfo').textContent =
@@ -420,7 +422,7 @@ function drawNote(ctx, x, baseY, noteName, lineSpacing) {
     // Position 0 = top line (F5), position 4 = bottom line (E4)
     const notePositions = {
         'B3': 6, 'C4': 5, 'D4': 4.5, 'E4': 4, 'F4': 3.5, 'G4': 3, 'A4': 2.5, 'B4': 2,
-        'C5': 1.5, 'D5': 1, 'E5': 0.5, 'F5': 0, 'G5': -0.5, 'A5': -1
+        'C5': 1.5, 'D5': 1, 'E5': 0.5, 'F5': 0, 'G5': -0.5, 'A5': -1, 'B5': -1.5, 'C6': -2
     };
 
     const position = notePositions[noteName];
