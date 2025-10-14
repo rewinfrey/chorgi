@@ -352,10 +352,11 @@ function drawTrebleClef(ctx, x, y) {
 // Draw a note on the staff
 function drawNote(ctx, x, baseY, noteName, lineSpacing) {
     // Note positions on treble clef (middle C is C4)
-    // E5 = top line, C4 = below staff
+    // Lines from bottom to top: E4, G4, B4, D5, F5
+    // Position 0 = top line (F5), position 4 = bottom line (E4)
     const notePositions = {
-        'C4': 6, 'D4': 5.5, 'E4': 5, 'F4': 4.5, 'G4': 4, 'A4': 3.5, 'B4': 3,
-        'C5': 2.5, 'D5': 2, 'E5': 1.5, 'F5': 1, 'G5': 0.5, 'A5': 0, 'B5': -0.5
+        'B3': 6, 'C4': 5, 'D4': 4.5, 'E4': 4, 'F4': 3.5, 'G4': 3, 'A4': 2.5, 'B4': 2,
+        'C5': 1.5, 'D5': 1, 'E5': 0.5, 'F5': 0, 'G5': -0.5, 'A5': -1
     };
 
     const position = notePositions[noteName];
@@ -378,10 +379,23 @@ function drawNote(ctx, x, baseY, noteName, lineSpacing) {
     ctx.stroke();
 
     // Draw ledger lines if needed (for notes outside staff)
-    if (position >= 5) {
-        // Below staff
-        for (let i = 5; i <= position; i += 0.5) {
-            if (i % 1 === 0) {
+    if (position > 4) {
+        // Below staff (C4 and lower)
+        for (let i = 5; i <= position; i += 1) {
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            const ledgerY = baseY + i * lineSpacing;
+            ctx.moveTo(x - 15, ledgerY);
+            ctx.lineTo(x + 15, ledgerY);
+            ctx.stroke();
+        }
+    }
+
+    if (position < 0) {
+        // Above staff (G5 and higher)
+        for (let i = 0; i >= position; i -= 1) {
+            if (i < 0) {
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
