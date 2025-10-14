@@ -203,16 +203,19 @@
         }
 
         .visualizations {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        .visualization-section {
             background: #f9f9f9;
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .visualization-section {
+            padding: 20px 0;
+        }
+
+        .visualization-section:not(:last-child) {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
         }
 
         .visualization-section h3 {
