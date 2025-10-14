@@ -27,7 +27,7 @@ const gameState = {
 const PIANO_CONFIG = {
     canvas: null,
     ctx: null,
-    width: 800,
+    width: 700,  // 14 white keys * 50px
     height: 200,
     whiteKeyWidth: 50,
     whiteKeyHeight: 180,
@@ -43,7 +43,7 @@ const PIANO_CONFIG = {
 const ANSWER_PIANO_CONFIG = {
     canvas: null,
     ctx: null,
-    width: 800,
+    width: 700,  // 14 white keys * 50px
     height: 200,
     whiteKeyWidth: 50,
     whiteKeyHeight: 180,
