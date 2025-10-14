@@ -18,8 +18,8 @@ const DIATONIC_CHORDS = {
     'Bdim': { name: 'B Diminished', notes: ['B4', 'D5', 'F5'], type: 'diminished', roman: 'vii°' }
 };
 
-// Guitar string tuning (standard tuning)
-const GUITAR_TUNING = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
+// Guitar string tuning (standard tuning - high E to low E)
+const GUITAR_TUNING = ['E4', 'B3', 'G3', 'D3', 'A2', 'E2'];
 
 // Convert note name with octave to MIDI number
 function noteToMidi(noteName) {
@@ -233,19 +233,36 @@ function drawGuitar() {
 
     // Draw chord shape
     chordShape.forEach(({ string, fret, degree }) => {
-        const x = startX + (fret - 0.5) * fretWidth;
         const y = startY + string * stringSpacing;
+        let x;
 
-        ctx.fillStyle = '#667eea';
-        ctx.beginPath();
-        ctx.arc(x, y, 12, 0, Math.PI * 2);
-        ctx.fill();
+        if (fret === 0) {
+            // Open string - draw at the nut
+            x = startX - 20;
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(degree, x, y);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(degree, x, y);
+        } else {
+            // Fretted note - draw between frets
+            x = startX + (fret - 0.5) * fretWidth;
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(degree, x, y);
+        }
     });
 
     document.getElementById('guitarInfo').textContent =
@@ -291,7 +308,7 @@ function findGuitarChordShape(noteNames) {
                 (noteMidi % 12) === (chordNote % 12)
             );
 
-            if (noteInChord && fret > 0) {
+            if (noteInChord) {
                 const degree = getChordDegree(noteMidi, chordMidiNotes);
                 shape.push({ string: stringIndex, fret, degree });
                 break;
