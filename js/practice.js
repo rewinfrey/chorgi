@@ -121,7 +121,12 @@ function loadNewChallenge() {
         availableChords = chordKeys;
     }
 
-    // Pick random chord
+    // Avoid repeating the same chord twice in a row
+    if (gameState.currentChordKey && availableChords.length > 1) {
+        availableChords = availableChords.filter(key => key !== gameState.currentChordKey);
+    }
+
+    // Pick random chord from available pool
     const randomKey = availableChords[Math.floor(Math.random() * availableChords.length)];
     gameState.currentChord = chords[randomKey];
     gameState.currentChordKey = randomKey;
