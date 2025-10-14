@@ -102,6 +102,26 @@ export function midiToNoteName(midi, useFlats = false) {
     return noteNames[noteIndex] + octave;
 }
 
+// ===== SCALE GENERATION =====
+
+/**
+ * Generate scale notes for a given root and scale type
+ * Returns array of note names (e.g., ['C4', 'D4', 'E4', ...])
+ */
+export function generateScale(rootNote, scaleType) {
+    const scale = SCALES[scaleType];
+    const rootMidi = NOTE_TO_MIDI[rootNote];
+    const preferFlats = scaleType.includes('minor');
+
+    return scale.intervals.map(interval => {
+        const noteMidi = rootMidi + interval;
+        const octave = 4 + Math.floor(interval / 12);
+        const noteClass = noteMidi % 12;
+        const noteName = getNoteName(noteClass, preferFlats);
+        return `${noteName}${octave}`;
+    });
+}
+
 // ===== CHORD GENERATION =====
 
 /**

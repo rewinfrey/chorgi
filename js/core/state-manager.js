@@ -19,7 +19,11 @@ class StateManager {
             compareMode: false,
             secondaryScale: null,
             secondaryRoot: null,
-            secondaryChords: null
+            secondaryChords: null,
+
+            // Multi-scale overlay (Phase 2 - Enhanced)
+            overlayScales: [],
+            nextOverlayId: 1
         };
 
         // Initialize chords
@@ -30,7 +34,8 @@ class StateManager {
         this.listeners = {
             'scale-changed': [],
             'chord-changed': [],
-            'compare-mode-changed': []
+            'compare-mode-changed': [],
+            'overlay-changed': []
         };
     }
 
@@ -116,6 +121,53 @@ class StateManager {
 
     getSecondaryChords() {
         return this.state.secondaryChords;
+    }
+
+    // Multi-scale overlay methods
+    addOverlayScale(root, scaleType, color) {
+        const id = this.state.nextOverlayId++;
+        const overlayScale = {
+            id,
+            root,
+            type: scaleType,
+            color,
+            visible: true,
+            name: SCALES[scaleType].name
+        };
+
+        this.state.overlayScales.push(overlayScale);
+        this.emit('overlay-changed', this.state.overlayScales);
+        return id;
+    }
+
+    removeOverlayScale(id) {
+        this.state.overlayScales = this.state.overlayScales.filter(s => s.id !== id);
+        this.emit('overlay-changed', this.state.overlayScales);
+    }
+
+    toggleOverlayScaleVisibility(id) {
+        const scale = this.state.overlayScales.find(s => s.id === id);
+        if (scale) {
+            scale.visible = !scale.visible;
+            this.emit('overlay-changed', this.state.overlayScales);
+        }
+    }
+
+    updateOverlayScaleColor(id, color) {
+        const scale = this.state.overlayScales.find(s => s.id === id);
+        if (scale) {
+            scale.color = color;
+            this.emit('overlay-changed', this.state.overlayScales);
+        }
+    }
+
+    clearOverlayScales() {
+        this.state.overlayScales = [];
+        this.emit('overlay-changed', this.state.overlayScales);
+    }
+
+    getOverlayScales() {
+        return this.state.overlayScales;
     }
 
     // Event system

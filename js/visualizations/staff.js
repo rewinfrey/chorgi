@@ -2,7 +2,11 @@
  * Musical Staff Visualization
  *
  * Renders chords on a treble clef staff with proper notation
+ * with support for multi-scale overlay
  */
+
+import { noteToMidi } from '../core/music-theory.js';
+import { getColorForPitch } from '../utils/overlay-utils.js';
 
 // Note positions on treble clef - shared constant
 const STAFF_NOTE_POSITIONS = {
@@ -15,9 +19,9 @@ const STAFF_NOTE_POSITIONS = {
 };
 
 /**
- * Draw a complete staff with a chord
+ * Draw a complete staff with a chord or scale overlay
  */
-export function drawStaff(canvasId, chord) {
+export function drawStaff(canvasId, chord, options = {}) {
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext('2d');
 
@@ -27,6 +31,10 @@ export function drawStaff(canvasId, chord) {
     const lineSpacing = 15;
     const startX = 80;
     const startY = 60;
+
+    // Check if we're in overlay mode
+    const { primaryScale, overlayScales = [] } = options;
+    const hasOverlays = overlayScales.length > 0;
 
     // Draw staff lines
     ctx.strokeStyle = '#333';
@@ -58,13 +66,26 @@ export function drawStaff(canvasId, chord) {
 
     // Draw notes with aligned text position
     chord.notes.forEach((noteName, index) => {
-        drawNote(ctx, noteX + index * 70, startY, noteName, lineSpacing, maxTextY);
+        // Get color based on overlay mode
+        let color = '#667eea'; // Default purple
+        if (hasOverlays) {
+            const midi = noteToMidi(noteName);
+            const pitchClass = midi % 12;
+            color = getColorForPitch(pitchClass, primaryScale, overlayScales);
+        }
+
+        drawNote(ctx, noteX + index * 70, startY, noteName, lineSpacing, maxTextY, color);
     });
 
     // Update info text
     const infoElement = document.getElementById(canvasId.replace('Canvas', 'Info'));
     if (infoElement) {
-        infoElement.textContent = `${chord.name} - Treble clef notation`;
+        if (hasOverlays) {
+            const scaleCount = overlayScales.filter(s => s.visible).length + 1;
+            infoElement.textContent = `Showing ${scaleCount} scale${scaleCount > 1 ? 's' : ''} on treble clef`;
+        } else {
+            infoElement.textContent = `${chord.name} - Treble clef notation`;
+        }
     }
 }
 
@@ -82,7 +103,7 @@ function drawTrebleClef(ctx, x, y) {
 /**
  * Draw a note on the staff
  */
-function drawNote(ctx, x, baseY, noteName, lineSpacing, alignedTextY = null) {
+function drawNote(ctx, x, baseY, noteName, lineSpacing, alignedTextY = null, color = '#667eea') {
     // Note positions on treble clef (middle C is C4)
     // Lines from bottom to top: E4, G4, B4, D5, F5
     // Position 0 = top line (F5), position 4 = bottom line (E4)
@@ -110,14 +131,14 @@ function drawNote(ctx, x, baseY, noteName, lineSpacing, alignedTextY = null) {
         ctx.fillText('♯', x - 20, y);
     }
 
-    // Draw note head
-    ctx.fillStyle = '#667eea';
+    // Draw note head with provided color
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.ellipse(x, y, 10, 8, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
 
-    // Draw stem
-    ctx.strokeStyle = '#667eea';
+    // Draw stem with same color
+    ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(x + 9, y);

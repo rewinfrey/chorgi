@@ -2,14 +2,16 @@
  * Guitar Fretboard Visualization
  *
  * Renders a guitar fretboard with chord tones highlighted and labeled
+ * with support for multi-scale overlay
  */
 
 import { noteToMidi, getChordDegree, getDegreeColor, GUITAR_TUNING } from '../core/music-theory.js';
+import { getColorForPitch } from '../utils/overlay-utils.js';
 
 /**
- * Draw guitar fretboard with chord highlighted
+ * Draw guitar fretboard with chord highlighted or scale overlay
  */
-export function drawGuitar(canvasId, chord) {
+export function drawGuitar(canvasId, chord, options = {}) {
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext('2d');
 
@@ -24,8 +26,14 @@ export function drawGuitar(canvasId, chord) {
 
     const chordMidiNotes = chord.notes.map(noteToMidi);
 
-    // Find chord shape on guitar
-    const chordShape = findGuitarChordShape(chord.notes);
+    // Check if we're in overlay mode
+    const { primaryScale, overlayScales = [] } = options;
+    const hasOverlays = overlayScales.length > 0;
+
+    // Find chord shape on guitar (or scale notes if in overlay mode)
+    const chordShape = hasOverlays
+        ? findGuitarChordShape(chord.notes, primaryScale, overlayScales)
+        : findGuitarChordShape(chord.notes);
 
     // Draw frets
     ctx.strokeStyle = '#999';
@@ -69,9 +77,9 @@ export function drawGuitar(canvasId, chord) {
     });
 
     // Draw chord shape
-    chordShape.forEach(({ string, fret, degree }) => {
+    chordShape.forEach(({ string, fret, degree, color: shapeColor }) => {
         const y = startY + string * stringSpacing;
-        const color = getDegreeColor(degree);
+        const color = shapeColor || getDegreeColor(degree); // Use shape color if provided (overlay mode)
         let x;
 
         if (fret === 0) {
@@ -82,11 +90,14 @@ export function drawGuitar(canvasId, chord) {
             ctx.arc(x, y, 10, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 10px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(degree, x, y);
+            // In overlay mode, don't show degree label
+            if (!hasOverlays && degree) {
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(degree, x, y);
+            }
         } else {
             // Fretted note - draw between frets
             x = startX + (fret - 0.5) * fretWidth;
@@ -95,11 +106,14 @@ export function drawGuitar(canvasId, chord) {
             ctx.arc(x, y, 12, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(degree, x, y);
+            // In overlay mode, don't show degree label
+            if (!hasOverlays && degree) {
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(degree, x, y);
+            }
         }
     });
 
@@ -141,31 +155,51 @@ export function drawGuitar(canvasId, chord) {
     // Update info text
     const infoElement = document.getElementById(canvasId.replace('Canvas', 'Info'));
     if (infoElement) {
-        infoElement.textContent = `${chord.name} - All chord tones across the fretboard`;
+        if (hasOverlays) {
+            const scaleCount = overlayScales.filter(s => s.visible).length + 1;
+            infoElement.textContent = `Showing ${scaleCount} scale${scaleCount > 1 ? 's' : ''} across fretboard - Colors blend where scales overlap`;
+        } else {
+            infoElement.textContent = `${chord.name} - All chord tones across the fretboard`;
+        }
     }
 }
 
 /**
- * Find all chord tones across the fretboard
+ * Find all chord tones (or scale notes in overlay mode) across the fretboard
  */
-function findGuitarChordShape(noteNames) {
+function findGuitarChordShape(noteNames, primaryScale = null, overlayScales = []) {
     const shape = [];
     const chordMidiNotes = noteNames.map(noteToMidi);
     const numFrets = 12;
 
-    // For each string, find all frets that contain a chord note
+    const hasOverlays = overlayScales && overlayScales.length > 0;
+
+    // For each string, find all frets that contain a chord note (or scale note in overlay mode)
     GUITAR_TUNING.forEach((stringNote, stringIndex) => {
         const openStringMidi = noteToMidi(stringNote);
 
         for (let fret = 0; fret <= numFrets; fret++) {
             const noteMidi = openStringMidi + fret;
-            const noteInChord = chordMidiNotes.some(chordNote =>
-                (noteMidi % 12) === (chordNote % 12)
-            );
+            const pitchClass = noteMidi % 12;
 
-            if (noteInChord) {
-                const degree = getChordDegree(noteMidi, chordMidiNotes);
-                shape.push({ string: stringIndex, fret, degree });
+            if (hasOverlays) {
+                // In overlay mode, show all notes from all visible scales
+                const color = getColorForPitch(pitchClass, primaryScale, overlayScales);
+
+                // Only show if this pitch is in at least one scale (not gray)
+                if (color !== '#EEEEEE') {
+                    shape.push({ string: stringIndex, fret, degree: null, color });
+                }
+            } else {
+                // Normal mode: only show chord tones
+                const noteInChord = chordMidiNotes.some(chordNote =>
+                    pitchClass === (chordNote % 12)
+                );
+
+                if (noteInChord) {
+                    const degree = getChordDegree(noteMidi, chordMidiNotes);
+                    shape.push({ string: stringIndex, fret, degree });
+                }
             }
         }
     });
