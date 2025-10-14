@@ -77,37 +77,115 @@
         .game-section {
             background: #f9f9f9;
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             margin-bottom: 30px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .game-header {
+        .compact-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .challenge-box {
+        .settings-inline {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .setting-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-inline label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+
+        .select-input-compact {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border: 2px solid #667eea;
+            border-radius: 8px;
             background: white;
-            padding: 30px;
-            border-radius: 15px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .select-input-compact:hover {
+            border-color: #764ba2;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .challenge-compact {
             text-align: center;
-            margin-bottom: 30px;
-            border: 3px solid #667eea;
+            padding: 15px 40px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            margin: 20px auto 10px auto;
+            width: fit-content;
+            max-width: 400px;
         }
 
-        .challenge-label {
-            font-size: 1.2em;
+        .challenge-label-compact {
+            font-size: 1em;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .challenge-chord {
-            font-size: 3em;
+        .challenge-chord-compact {
+            font-size: 2.5em;
             font-weight: bold;
             color: #667eea;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .challenge-chord-compact:hover {
+            transform: scale(1.05);
+            color: #5568d3;
+        }
+
+        .chord-full-name {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #666;
+            font-style: italic;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score-panel-compact {
+            display: flex;
+            gap: 12px;
+        }
+
+        .score-item-compact {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 80px;
         }
 
         .score-panel {
@@ -292,55 +370,53 @@
             <a href="practice.html" class="nav-tab active">Practice Mode</a>
         </div>
 
-        <!-- Settings -->
-        <div class="settings-panel">
-            <h3>Practice Settings</h3>
-            <div class="setting-group">
-                <label for="difficultySelect">Difficulty Level:</label>
-                <select id="difficultySelect" class="select-input">
-                    <option value="beginner">Beginner (Major & Minor Triads)</option>
-                    <option value="intermediate" selected>Intermediate (7th Chords)</option>
-                    <option value="advanced">Advanced (Extended Chords)</option>
-                </select>
-            </div>
-            <div class="setting-group">
-                <label for="scaleSelect">Practice Scale:</label>
-                <select id="scaleSelect" class="select-input">
-                    <option value="C" selected>C Major</option>
-                    <option value="G">G Major</option>
-                    <option value="D">D Major</option>
-                    <option value="A">A Major</option>
-                    <option value="F">F Major</option>
-                    <option value="A-minor">A Natural Minor</option>
-                    <option value="E-minor">E Natural Minor</option>
-                    <option value="D-minor">D Natural Minor</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Game Area -->
+        <!-- Compact Game Area -->
         <div class="game-section">
-            <div class="game-header">
-                <h2>Chord Recognition Challenge</h2>
-                <div class="score-panel">
-                    <div class="score-item">
+            <div class="compact-header">
+                <div class="settings-inline">
+                    <div class="setting-inline">
+                        <label for="scaleSelect">Scale:</label>
+                        <select id="scaleSelect" class="select-input-compact">
+                            <option value="C" selected>C Major</option>
+                            <option value="G">G Major</option>
+                            <option value="D">D Major</option>
+                            <option value="A">A Major</option>
+                            <option value="F">F Major</option>
+                            <option value="A-minor">A Natural Minor</option>
+                            <option value="E-minor">E Natural Minor</option>
+                            <option value="D-minor">D Natural Minor</option>
+                        </select>
+                    </div>
+                    <div class="setting-inline">
+                        <label for="difficultySelect">Difficulty:</label>
+                        <select id="difficultySelect" class="select-input-compact">
+                            <option value="beginner">Beginner (Triads - 3 notes)</option>
+                            <option value="intermediate" selected>Intermediate (7th Chords - 4 notes)</option>
+                            <option value="advanced">Advanced (Extensions: 9, 11, 13, altered)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="score-panel-compact">
+                    <div class="score-item-compact">
                         <div class="score-label">Score</div>
                         <div class="score-value" id="scoreValue">0</div>
                     </div>
-                    <div class="score-item">
+                    <div class="score-item-compact">
                         <div class="score-label">Streak</div>
                         <div class="score-value" id="streakValue">0</div>
                     </div>
-                    <div class="score-item">
+                    <div class="score-item-compact">
                         <div class="score-label">Accuracy</div>
                         <div class="score-value" id="accuracyValue">0%</div>
                     </div>
                 </div>
             </div>
 
-            <div class="challenge-box">
-                <div class="challenge-label">Play this chord:</div>
-                <div class="challenge-chord" id="challengeChord">Cmaj7</div>
+            <div class="challenge-compact">
+                <div class="challenge-label-compact">Play this chord:</div>
+                <div class="challenge-chord-compact" id="challengeChord">Cmaj7</div>
+                <div class="chord-full-name" id="chordFullName" style="display: none;"></div>
             </div>
 
             <div class="feedback" id="feedback"></div>
@@ -364,7 +440,7 @@
                 <button id="checkBtn" class="btn">Check Answer</button>
                 <button id="clearBtn" class="btn secondary">Clear</button>
                 <button id="showAnswerBtn" class="btn secondary">Show Answer</button>
-                <button id="nextBtn" class="btn" style="display: none;">Next Chord</button>
+                <button id="nextBtn" class="btn">Next Chord</button>
             </div>
         </div>
 

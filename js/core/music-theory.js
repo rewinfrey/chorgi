@@ -226,3 +226,42 @@ export function getDegreeColor(degree) {
     };
     return colorMap[degree] || '#999';
 }
+
+/**
+ * Format chord symbol with proper music notation
+ * Converts text symbols to Unicode music symbols
+ */
+export function formatChordSymbol(chordSymbol) {
+    return chordSymbol
+        // Major chords
+        .replace(/maj13/g, 'Δ13')      // Major 13
+        .replace(/maj9#11/g, 'Δ9♯11') // Major 9#11
+        .replace(/maj9/g, 'Δ9')        // Major 9
+        .replace(/maj7/g, 'Δ7')        // Major 7
+        // Half-diminished
+        .replace(/m11b5/g, 'ø11')      // Half-dim 11
+        .replace(/m9b5/g, 'ø9')        // Half-dim 9
+        .replace(/m7b5/g, 'ø7')        // Half-dim 7
+        // Diminished
+        .replace(/dim9/g, 'o9')        // Diminished 9
+        .replace(/dim7/g, 'o7')        // Diminished 7
+        // Minor-major
+        .replace(/mMaj9/g, 'm(maj9)')  // Minor-major 9
+        .replace(/mMaj7/g, 'm(maj7)')  // Minor-major 7
+        // Augmented
+        .replace(/maj9#5/g, 'Δ9♯5')   // Major 9 #5
+        .replace(/maj7#5/g, 'Δ7♯5')   // Major 7 #5
+        // Minor chords
+        .replace(/m13/g, 'm13')        // Minor 13
+        .replace(/m11/g, 'm11')        // Minor 11
+        .replace(/m9/g, 'm9')          // Minor 9
+        .replace(/m7/g, 'm7')          // Minor 7
+        // Flat/sharp symbols
+        .replace(/b/g, '♭')            // Flat
+        .replace(/#/g, '♯')            // Sharp
+        // Dominant chords (catch all remaining)
+        .replace(/^(.+)13$/, '$113')   // Dominant 13
+        .replace(/^(.+)11$/, '$111')   // Dominant 11
+        .replace(/^(.+)9$/, '$19')     // Dominant 9
+        .replace(/^(.+)7$/, '$17');    // Dominant 7
+}

@@ -4,7 +4,7 @@
  * Interactive learning with clickable piano and scoring
  */
 
-import { generateDiatonicChords, noteToMidi } from './core/music-theory.js';
+import { generateDiatonicChords, noteToMidi, formatChordSymbol } from './core/music-theory.js';
 import { loadStats, updateStats, getFormattedStats } from './utils/storage.js';
 
 // Game state
@@ -88,6 +88,17 @@ function setupEventListeners() {
     document.getElementById('showAnswerBtn').addEventListener('click', showAnswer);
     document.getElementById('nextBtn').addEventListener('click', nextChallenge);
 
+    // Chord symbol click to show full name
+    document.getElementById('challengeChord').addEventListener('click', function() {
+        const fullNameElement = document.getElementById('chordFullName');
+        if (fullNameElement.style.display === 'none') {
+            fullNameElement.textContent = this.dataset.fullName;
+            fullNameElement.style.display = 'block';
+        } else {
+            fullNameElement.style.display = 'none';
+        }
+    });
+
     // Settings
     document.getElementById('difficultySelect').addEventListener('change', (e) => {
         gameState.difficulty = e.target.value;
@@ -116,9 +127,106 @@ function loadNewChallenge() {
 
     // Filter by difficulty
     let availableChords = chordKeys;
+
     if (gameState.difficulty === 'beginner') {
-        // Only major and minor chords (simplified - just use all for now)
+        // Only triads: remove the 7th note from each chord
         availableChords = chordKeys;
+        // Modify chords to be triads (first 3 notes only)
+        availableChords.forEach(key => {
+            if (chords[key].notes.length > 3) {
+                chords[key] = {
+                    ...chords[key],
+                    notes: chords[key].notes.slice(0, 3),
+                    name: chords[key].name.replace(' 7', '').replace('7', '')
+                };
+            }
+        });
+    } else if (gameState.difficulty === 'advanced') {
+        // Extended chords: add various extensions (9, 11, 13, altered)
+        availableChords = chordKeys;
+        availableChords.forEach(key => {
+            const chord = chords[key];
+            const rootNote = chord.notes[0];
+            const rootMidi = noteToMidi(rootNote);
+            const noteNames = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+            // Helper to create note from interval
+            const addInterval = (midi, interval) => {
+                const noteMidi = midi + interval;
+                const octave = Math.floor(noteMidi / 12) - 1;
+                const pitchClass = noteMidi % 12;
+                return noteNames[pitchClass] + octave;
+            };
+
+            // Randomly select extension type based on chord quality
+            const chordType = chord.type;
+            let extensions = [];
+            let extensionName = '';
+
+            if (chordType === 'maj7') {
+                // Major 7 extensions: 9, 13, #11
+                const extType = Math.floor(Math.random() * 3);
+                if (extType === 0) {
+                    extensions = [addInterval(rootMidi, 14)]; // 9th
+                    extensionName = ' 9';
+                } else if (extType === 1) {
+                    extensions = [addInterval(rootMidi, 14), addInterval(rootMidi, 21)]; // 9, 13
+                    extensionName = ' 13';
+                } else {
+                    extensions = [addInterval(rootMidi, 14), addInterval(rootMidi, 18)]; // 9, #11
+                    extensionName = ' 9#11';
+                }
+            } else if (chordType === 'min7') {
+                // Minor 7 extensions: 9, 11, 13
+                const extType = Math.floor(Math.random() * 3);
+                if (extType === 0) {
+                    extensions = [addInterval(rootMidi, 14)]; // 9th
+                    extensionName = ' 9';
+                } else if (extType === 1) {
+                    extensions = [addInterval(rootMidi, 14), addInterval(rootMidi, 17)]; // 9, 11
+                    extensionName = ' 11';
+                } else {
+                    extensions = [addInterval(rootMidi, 14), addInterval(rootMidi, 17), addInterval(rootMidi, 21)]; // 9, 11, 13
+                    extensionName = ' 13';
+                }
+            } else if (chordType === 'dom7') {
+                // Dominant 7 extensions: 9, 13, altered (#9, b9, #11)
+                const extType = Math.floor(Math.random() * 4);
+                if (extType === 0) {
+                    extensions = [addInterval(rootMidi, 14)]; // 9th
+                    extensionName = ' 9';
+                } else if (extType === 1) {
+                    extensions = [addInterval(rootMidi, 14), addInterval(rootMidi, 21)]; // 9, 13
+                    extensionName = ' 13';
+                } else if (extType === 2) {
+                    extensions = [addInterval(rootMidi, 15)]; // #9
+                    extensionName = ' 7#9';
+                } else {
+                    extensions = [addInterval(rootMidi, 13)]; // b9
+                    extensionName = ' 7b9';
+                }
+            } else if (chordType === 'm7b5') {
+                // Half-dim extensions: 9, 11, b13
+                const extType = Math.floor(Math.random() * 2);
+                if (extType === 0) {
+                    extensions = [addInterval(rootMidi, 14)]; // 9th
+                    extensionName = ' 9';
+                } else {
+                    extensions = [addInterval(rootMidi, 14), addInterval(rootMidi, 17)]; // 9, 11
+                    extensionName = ' 11';
+                }
+            } else {
+                // Other chords: just add 9th
+                extensions = [addInterval(rootMidi, 14)];
+                extensionName = ' 9';
+            }
+
+            chords[key] = {
+                ...chord,
+                notes: [...chord.notes, ...extensions],
+                name: chord.name.replace(' 7', extensionName).replace('7', extensionName.trim())
+            };
+        });
     }
 
     // Avoid repeating the same chord twice in a row
@@ -131,15 +239,60 @@ function loadNewChallenge() {
     gameState.currentChord = chords[randomKey];
     gameState.currentChordKey = randomKey;
 
+    // Create chord symbol based on the modified chord
+    // Extract root note from the first note of the chord
+    const rootNote = gameState.currentChord.notes[0].replace(/\d+/, ''); // Remove octave number
+    const chordName = gameState.currentChord.name;
+
+    // Build chord symbol from root + quality
+    let chordSymbol = rootNote;
+    if (chordName.includes('Major 13')) chordSymbol += 'maj13';
+    else if (chordName.includes('Major 9#11')) chordSymbol += 'maj9#11';
+    else if (chordName.includes('Major 9')) chordSymbol += 'maj9';
+    else if (chordName.includes('Major 7')) chordSymbol += 'maj7';
+    else if (chordName.includes('Major')) chordSymbol += '';
+    else if (chordName.includes('Minor 13')) chordSymbol += 'm13';
+    else if (chordName.includes('Minor 11')) chordSymbol += 'm11';
+    else if (chordName.includes('Minor 9')) chordSymbol += 'm9';
+    else if (chordName.includes('Minor 7')) chordSymbol += 'm7';
+    else if (chordName.includes('Minor')) chordSymbol += 'm';
+    else if (chordName.includes('Half-Diminished 11')) chordSymbol += 'm11b5';
+    else if (chordName.includes('Half-Diminished 9')) chordSymbol += 'm9b5';
+    else if (chordName.includes('Half-Diminished')) chordSymbol += 'm7b5';
+    else if (chordName.includes('Dominant 13')) chordSymbol += '13';
+    else if (chordName.includes('Dominant 9')) chordSymbol += '9';
+    else if (chordName.includes('7#9')) chordSymbol += '7#9';
+    else if (chordName.includes('7b9')) chordSymbol += '7b9';
+    else if (chordName.includes('Dominant 7')) chordSymbol += '7';
+
+    // Debug logging
+    console.log('Difficulty:', gameState.difficulty);
+    console.log('Chord key:', randomKey);
+    console.log('Chord name:', gameState.currentChord.name);
+    console.log('Chord symbol:', chordSymbol);
+    console.log('Note count:', gameState.currentChord.notes.length);
+    console.log('Notes:', gameState.currentChord.notes);
+
     // Reset state
     gameState.userSelectedNotes.clear();
     gameState.showingAnswer = false;
 
-    // Update UI
-    document.getElementById('challengeChord').textContent = gameState.currentChord.name;
+    // Update UI - display formatted chord symbol
+    const chordElement = document.getElementById('challengeChord');
+    const formattedSymbol = formatChordSymbol(chordSymbol);
+    chordElement.textContent = formattedSymbol;
+
+    // Store full name for click interaction
+    chordElement.dataset.fullName = gameState.currentChord.name;
+
+    // Hide full name initially
+    const fullNameElement = document.getElementById('chordFullName');
+    if (fullNameElement) {
+        fullNameElement.style.display = 'none';
+    }
+
     document.getElementById('feedback').className = 'feedback';
     document.getElementById('feedback').style.display = 'none';
-    document.getElementById('nextBtn').style.display = 'none';
     document.getElementById('checkBtn').disabled = false;
     document.getElementById('answerSection').style.display = 'none';
 
@@ -331,9 +484,6 @@ function showAnswer() {
     // Draw answer piano with correct notes highlighted
     drawAnswerPiano();
 
-    // Show next button
-    document.getElementById('nextBtn').style.display = 'inline-block';
-
     // Scroll to answer
     document.getElementById('answerSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -463,7 +613,6 @@ function checkAnswer() {
 
     if (isCorrect) {
         document.getElementById('checkBtn').disabled = true;
-        document.getElementById('nextBtn').style.display = 'inline-block';
 
         // Save progress every correct answer
         saveProgress();
