@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chorgi - About</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            min-height: 120px;
+        }
+
+        .header a {
+            position: absolute;
+            left: 0;
+        }
+
+        .mascot {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            display: block;
+        }
+
+        .mascot:hover {
+            opacity: 0.8;
+        }
+
+        .header-text {
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.4em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 0;
+            font-size: 1.1em;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0;
+            justify-content: center;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover {
+            color: #667eea;
+            background: #f5f5f5;
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .content {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro {
+            font-size: 1.2em;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        p {
+            color: #444;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+            color: #444;
+            line-height: 1.8;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #667eea;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .feature-card {
+            background: transparent;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: #764ba2;
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+
+        .roadmap {
+            background: rgba(118, 75, 162, 0.05);
+            border-left: 4px solid #764ba2;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 5px;
+        }
+
+        .roadmap h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html">
+                <img src="chorgi-mascot-white.png" alt="Chorgi Mascot" class="mascot">
+            </a>
+        </div>
+
+        <div class="nav-tabs">
+            <a href="index.html" class="nav-tab">Chord Explorer</a>
+            <a href="analysis.html" class="nav-tab">Key Analysis</a>
+            <a href="practice.html" class="nav-tab">Practice Mode</a>
+            <a href="about.html" class="nav-tab active">About</a>
+        </div>
+
+        <div class="content">
+            <h1>About Chorgi</h1>
+
+            <p class="intro">
+                An interactive music theory learning and exploration tool designed to help musicians
+                visualize, understand, and practice chords, scales, and key relationships across multiple instruments.
+            </p>
+
+            <h2>Project Goals</h2>
+            <p>
+                Chorgi was created with the vision of making music theory more accessible and visual.
+                Many musicians struggle to understand abstract concepts like chord progressions, key relationships,
+                and modulation techniques. Chorgi bridges this gap by providing:
+            </p>
+            <ul>
+                <li><strong>Visual Learning:</strong> See music theory concepts rendered on actual instruments (staff notation, piano, guitar)</li>
+                <li><strong>Interactive Exploration:</strong> Experiment with different scales, chords, and relationships in real-time</li>
+                <li><strong>Practical Application:</strong> Learn through hands-on practice with the chord recognition game</li>
+                <li><strong>Deep Understanding:</strong> Discover how keys relate to each other and how to modulate between them</li>
+            </ul>
+
+            <h2>Core Features</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Chord Explorer</h3>
+                    <p>Explore diatonic chords across different scales with real-time visualizations on three instruments:</p>
+                    <ul>
+                        <li>Musical Staff (Treble Clef) with proper notation</li>
+                        <li>Two-octave Piano Roll with highlighted chord tones</li>
+                        <li>Guitar Fretboard showing all positions across 12 frets</li>
+                    </ul>
+                    <p><strong>Multi-Scale Overlay:</strong> Compare multiple scales simultaneously to see where they share notes and differ.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Key Analysis</h3>
+                    <p>Deep dive into key relationships and modulation paths:</p>
+                    <ul>
+                        <li>Discover all 15+ musically related keys</li>
+                        <li>Identify pivot chords between keys for smooth modulation</li>
+                        <li>Quality scoring (0-10) for modulation effectiveness</li>
+                        <li>Popularity indicators for relationship commonality</li>
+                    </ul>
+                    <p><strong>Comprehensive Guide:</strong> Built-in explanations of key relationships, distant modulation strategies, and famous song examples.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Practice Mode</h3>
+                    <p>Interactive chord recognition game to develop your skills:</p>
+                    <ul>
+                        <li>Click notes on the piano to build chords</li>
+                        <li>Real-time feedback and validation</li>
+                        <li>Difficulty levels: Triads, 7th chords, Extensions</li>
+                        <li>Scoring system with streaks and accuracy tracking</li>
+                        <li>Lifetime statistics saved locally</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Technology</h2>
+            <p>
+                Chorgi is built with vanilla JavaScript using ES6 modules and HTML5 Canvas for visualizations.
+                The architecture emphasizes:
+            </p>
+            <ul>
+                <li><strong>Pure Functions:</strong> Core music theory calculations are side-effect free</li>
+                <li><strong>Event-Driven State:</strong> Centralized state management with event emission</li>
+                <li><strong>Reusable Components:</strong> Modular visualizations that work across different modes</li>
+                <li><strong>No Dependencies:</strong> Runs entirely in the browser with no external libraries</li>
+            </ul>
+
+            <div class="roadmap">
+                <h3>Future Vision</h3>
+                <p><strong>Theory Lab:</strong> Negative harmony calculator, chord inversions, voicing library, modal interchange explorer, circle of fifths</p>
+                <p><strong>Progression Builder:</strong> Drag-and-drop chord sequencer with audio playback, save/share progressions, common progression library</p>
+                <p><strong>Enhancements:</strong> Audio playback with Web Audio API, MIDI input/output support, additional instruments (bass, ukulele), mobile responsive design, offline PWA support</p>
+            </div>
+
+            <h2>Open Source</h2>
+            <p>
+                Chorgi is open source and available under the MIT License. Contributions are welcome!
+                Whether you're adding new features, fixing bugs, or improving documentation, your help makes
+                music theory more accessible to everyone.
+            </p>
+            <p style="text-align: center; margin-top: 30px;">
+                <a href="https://github.com/rewinfrey/chorgi"
+                   style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 1.1em;">
+                    View on GitHub →
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

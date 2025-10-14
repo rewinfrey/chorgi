@@ -36,12 +36,22 @@
             min-height: 120px;
         }
 
-        .mascot {
+        .header a {
             position: absolute;
             left: 0;
+        }
+
+        .mascot {
             width: 120px;
             height: 120px;
             object-fit: contain;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            display: block;
+        }
+
+        .mascot:hover {
+            opacity: 0.8;
         }
 
         .header-text {
@@ -82,6 +92,7 @@
             margin-bottom: 30px;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 0;
+            justify-content: center;
         }
 
         .nav-tab {
@@ -418,16 +429,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="chorgi-mascot-white.png" alt="Chorgi Mascot" class="mascot">
-            <div class="header-text">
-                <p class="subtitle">Music Theory & Chord Explorer</p>
-            </div>
+            <a href="index.html">
+                <img src="chorgi-mascot-white.png" alt="Chorgi Mascot" class="mascot">
+            </a>
         </div>
 
         <div class="nav-tabs">
             <a href="index.html" class="nav-tab active">Chord Explorer</a>
             <a href="analysis.html" class="nav-tab">Key Analysis</a>
             <a href="practice.html" class="nav-tab">Practice Mode</a>
+            <a href="about.html" class="nav-tab">About</a>
         </div>
 
         <div class="scale-selector">
