@@ -7,16 +7,114 @@ const NOTE_TO_MIDI = {
     'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
 };
 
-// C Major Scale Diatonic Chords (with 7ths)
-const DIATONIC_CHORDS = {
-    'Cmaj7': { name: 'C Major 7', notes: ['C4', 'E4', 'G4', 'B4'], type: 'maj7', roman: 'Imaj7' },
-    'Dm7': { name: 'D Minor 7', notes: ['D4', 'F4', 'A4', 'C5'], type: 'min7', roman: 'iim7' },
-    'Em7': { name: 'E Minor 7', notes: ['E4', 'G4', 'B4', 'D5'], type: 'min7', roman: 'iiim7' },
-    'Fmaj7': { name: 'F Major 7', notes: ['F4', 'A4', 'C5', 'E5'], type: 'maj7', roman: 'IVmaj7' },
-    'G7': { name: 'G Dominant 7', notes: ['G4', 'B4', 'D5', 'F5'], type: 'dom7', roman: 'V7' },
-    'Am7': { name: 'A Minor 7', notes: ['A4', 'C5', 'E5', 'G5'], type: 'min7', roman: 'vim7' },
-    'Bm7b5': { name: 'B Half-Diminished 7', notes: ['B4', 'D5', 'F5', 'A5'], type: 'm7b5', roman: 'viim7b5' }
+// Scale definitions (intervals in semitones from root)
+const SCALES = {
+    'major': {
+        name: 'Major',
+        intervals: [0, 2, 4, 5, 7, 9, 11], // W-W-H-W-W-W-H
+        chordQualities: ['maj7', 'min7', 'min7', 'maj7', 'dom7', 'min7', 'm7b5']
+    },
+    'natural_minor': {
+        name: 'Natural Minor',
+        intervals: [0, 2, 3, 5, 7, 8, 10], // W-H-W-W-H-W-W
+        chordQualities: ['min7', 'm7b5', 'maj7', 'min7', 'min7', 'maj7', 'dom7']
+    },
+    'harmonic_minor': {
+        name: 'Harmonic Minor',
+        intervals: [0, 2, 3, 5, 7, 8, 11], // W-H-W-W-H-1.5-H
+        chordQualities: ['minMaj7', 'm7b5', 'maj7#5', 'min7', 'dom7', 'maj7', 'dim7']
+    },
+    'melodic_minor': {
+        name: 'Melodic Minor',
+        intervals: [0, 2, 3, 5, 7, 9, 11], // W-H-W-W-W-W-H
+        chordQualities: ['minMaj7', 'min7', 'maj7#5', 'dom7', 'dom7', 'm7b5', 'm7b5']
+    }
 };
+
+// Chord quality definitions
+const CHORD_QUALITY_INTERVALS = {
+    'maj7': [0, 4, 7, 11],      // Major 7th
+    'min7': [0, 3, 7, 10],      // Minor 7th
+    'dom7': [0, 4, 7, 10],      // Dominant 7th
+    'm7b5': [0, 3, 6, 10],      // Half-diminished 7th
+    'minMaj7': [0, 3, 7, 11],   // Minor-Major 7th
+    'maj7#5': [0, 4, 8, 11],    // Major 7th #5
+    'dim7': [0, 3, 6, 9]        // Diminished 7th
+};
+
+// Chord quality display names
+const CHORD_QUALITY_NAMES = {
+    'maj7': 'Major 7',
+    'min7': 'Minor 7',
+    'dom7': 'Dominant 7',
+    'm7b5': 'Half-Diminished 7',
+    'minMaj7': 'Minor-Major 7',
+    'maj7#5': 'Major 7 #5',
+    'dim7': 'Diminished 7'
+};
+
+// Roman numeral notation
+const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+
+// Generate diatonic chords for a scale
+function generateDiatonicChords(rootNote, scaleType) {
+    const scale = SCALES[scaleType];
+    const chords = {};
+    const rootMidi = NOTE_TO_MIDI[rootNote];
+
+    scale.intervals.forEach((interval, degreeIndex) => {
+        const chordRootMidi = rootMidi + interval;
+        const chordRootNote = Object.keys(NOTE_TO_MIDI).find(
+            note => NOTE_TO_MIDI[note] === (chordRootMidi % 12)
+        );
+
+        const quality = scale.chordQualities[degreeIndex];
+        const intervals = CHORD_QUALITY_INTERVALS[quality];
+
+        // Generate chord notes (4 octave for root, adjust for higher notes)
+        const notes = intervals.map((int, idx) => {
+            const noteMidi = chordRootMidi + int;
+            const octave = 4 + Math.floor((interval + int) / 12);
+            const noteClass = noteMidi % 12;
+            const noteName = Object.keys(NOTE_TO_MIDI).find(
+                note => NOTE_TO_MIDI[note] === noteClass
+            );
+            return `${noteName}${octave}`;
+        });
+
+        // Create chord key and roman numeral
+        const roman = ROMAN_NUMERALS[degreeIndex];
+        const romanNumeral = quality.includes('min') || quality.includes('dim') || quality === 'm7b5'
+            ? roman.toLowerCase()
+            : roman;
+
+        const chordSymbol = quality === 'maj7' ? `${chordRootNote}maj7` :
+                           quality === 'min7' ? `${chordRootNote}m7` :
+                           quality === 'dom7' ? `${chordRootNote}7` :
+                           quality === 'm7b5' ? `${chordRootNote}m7b5` :
+                           quality === 'minMaj7' ? `${chordRootNote}mMaj7` :
+                           quality === 'maj7#5' ? `${chordRootNote}maj7#5` :
+                           quality === 'dim7' ? `${chordRootNote}dim7` :
+                           chordRootNote;
+
+        chords[chordSymbol] = {
+            name: `${chordRootNote} ${CHORD_QUALITY_NAMES[quality]}`,
+            notes: notes,
+            type: quality,
+            roman: romanNumeral + (quality === 'dom7' ? '7' :
+                                   quality === 'maj7' ? 'maj7' :
+                                   quality === 'm7b5' ? 'm7b5' :
+                                   quality === 'minMaj7' ? 'mMaj7' :
+                                   quality === 'maj7#5' ? 'maj7#5' :
+                                   quality === 'dim7' ? 'dim7' : 'm7')
+        };
+    });
+
+    return chords;
+}
+
+// Current diatonic chords (will be updated based on scale selection)
+let DIATONIC_CHORDS = generateDiatonicChords('C', 'major');
 
 // Guitar string tuning (standard tuning - high E to low E)
 const GUITAR_TUNING = ['E4', 'B3', 'G3', 'D3', 'A2', 'E2'];
@@ -40,17 +138,54 @@ function midiToNoteName(midi, useFlats = false) {
 }
 
 // Application State
-let currentChord = 'Cmaj7';
+let currentScale = 'major';
+let currentRoot = 'C';
+let currentChord = Object.keys(DIATONIC_CHORDS)[0];
 
 // Initialize the application
 function init() {
+    setupScaleSelectors();
     createChordButtons();
+    updateScaleTitle();
     updateVisualizations();
+}
+
+// Setup scale selector event listeners
+function setupScaleSelectors() {
+    const rootSelect = document.getElementById('rootSelect');
+    const scaleSelect = document.getElementById('scaleSelect');
+
+    rootSelect.addEventListener('change', () => {
+        currentRoot = rootSelect.value;
+        updateScale();
+    });
+
+    scaleSelect.addEventListener('change', () => {
+        currentScale = scaleSelect.value;
+        updateScale();
+    });
+}
+
+// Update scale and regenerate chords
+function updateScale() {
+    DIATONIC_CHORDS = generateDiatonicChords(currentRoot, currentScale);
+    currentChord = Object.keys(DIATONIC_CHORDS)[0];
+    createChordButtons();
+    updateScaleTitle();
+    updateVisualizations();
+}
+
+// Update the scale title
+function updateScaleTitle() {
+    const scaleName = SCALES[currentScale].name;
+    document.getElementById('scaleTitle').textContent =
+        `${currentRoot} ${scaleName} - Diatonic 7th Chords`;
 }
 
 // Create chord selection buttons
 function createChordButtons() {
     const buttonsContainer = document.getElementById('chordButtons');
+    buttonsContainer.innerHTML = ''; // Clear existing buttons
 
     Object.keys(DIATONIC_CHORDS).forEach(chordKey => {
         const chord = DIATONIC_CHORDS[chordKey];
@@ -176,7 +311,7 @@ function drawGuitar() {
     const ctx = canvas.getContext('2d');
 
     canvas.width = 1050;
-    canvas.height = 280;
+    canvas.height = 320;
 
     const fretWidth = 70;
     const stringSpacing = 35;
@@ -282,6 +417,8 @@ function drawGuitar() {
         { degree: 'b3', label: 'b3rd' },
         { degree: '5', label: '5th' },
         { degree: 'b5', label: 'b5th' },
+        { degree: '#5', label: '#5th' },
+        { degree: '6', label: '6th' },
         { degree: '7', label: 'Maj7' },
         { degree: 'b7', label: 'Min7' }
     ];
@@ -319,7 +456,8 @@ function getChordDegree(noteMidi, chordMidiNotes) {
         4: '3',   // Major third
         6: 'b5',  // Diminished fifth
         7: '5',   // Perfect fifth
-        9: '6',   // Major sixth
+        8: '#5',  // Augmented fifth
+        9: '6',   // Major sixth / Diminished seventh
         10: 'b7', // Minor seventh
         11: '7'   // Major seventh
     };
@@ -361,6 +499,7 @@ function getDegreeColor(degree) {
         'b3': '#f093fb',   // Minor third - pink
         '5': '#4facfe',    // Perfect fifth - blue
         'b5': '#43e97b',   // Diminished fifth - green
+        '#5': '#38ada9',   // Augmented fifth - teal
         '6': '#fa709a',    // Sixth - coral
         'b7': '#fee140',   // Minor seventh - yellow
         '7': '#feca57'     // Major seventh - gold
