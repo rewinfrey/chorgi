@@ -175,7 +175,7 @@ function drawGuitar() {
     const canvas = document.getElementById('guitarCanvas');
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 900;
+    canvas.width = 1050;
     canvas.height = 250;
 
     const fretWidth = 70;
@@ -234,12 +234,13 @@ function drawGuitar() {
     // Draw chord shape
     chordShape.forEach(({ string, fret, degree }) => {
         const y = startY + string * stringSpacing;
+        const color = getDegreeColor(degree);
         let x;
 
         if (fret === 0) {
             // Open string - draw at the nut
             x = startX - 20;
-            ctx.fillStyle = '#667eea';
+            ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(x, y, 10, 0, Math.PI * 2);
             ctx.fill();
@@ -252,7 +253,7 @@ function drawGuitar() {
         } else {
             // Fretted note - draw between frets
             x = startX + (fret - 0.5) * fretWidth;
-            ctx.fillStyle = '#667eea';
+            ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(x, y, 12, 0, Math.PI * 2);
             ctx.fill();
@@ -265,8 +266,39 @@ function drawGuitar() {
         }
     });
 
+    // Draw legend
+    const legendX = startX + numFrets * fretWidth + 50;
+    const legendY = startY + 20;
+    const legendSpacing = 30;
+
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillStyle = '#333';
+    ctx.textAlign = 'left';
+    ctx.fillText('Legend:', legendX, legendY);
+
+    const legendItems = [
+        { degree: '1', label: 'Root' },
+        { degree: '3', label: '3rd' },
+        { degree: 'b3', label: 'b3rd' },
+        { degree: '5', label: '5th' },
+        { degree: 'b5', label: 'b5th' }
+    ];
+
+    legendItems.forEach((item, i) => {
+        const y = legendY + 20 + i * legendSpacing;
+
+        ctx.fillStyle = getDegreeColor(item.degree);
+        ctx.beginPath();
+        ctx.arc(legendX + 10, y, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#333';
+        ctx.font = '13px sans-serif';
+        ctx.fillText(item.label, legendX + 25, y + 4);
+    });
+
     document.getElementById('guitarInfo').textContent =
-        `${chord.name} - First position shape`;
+        `${chord.name} - All chord tones across the fretboard`;
 }
 
 // Get the scale degree of a note within a chord (1, 3, 5, etc.)
@@ -293,16 +325,17 @@ function getChordDegree(noteMidi, chordMidiNotes) {
     return degreeMap[interval] || '?';
 }
 
-// Find a simple guitar chord shape
+// Find all chord tones across the fretboard
 function findGuitarChordShape(noteNames) {
     const shape = [];
     const chordMidiNotes = noteNames.map(noteToMidi);
+    const numFrets = 12;
 
-    // For each string, find the first fret (0-5) that contains a chord note
+    // For each string, find all frets that contain a chord note
     GUITAR_TUNING.forEach((stringNote, stringIndex) => {
         const openStringMidi = noteToMidi(stringNote);
 
-        for (let fret = 0; fret <= 5; fret++) {
+        for (let fret = 0; fret <= numFrets; fret++) {
             const noteMidi = openStringMidi + fret;
             const noteInChord = chordMidiNotes.some(chordNote =>
                 (noteMidi % 12) === (chordNote % 12)
@@ -311,12 +344,26 @@ function findGuitarChordShape(noteNames) {
             if (noteInChord) {
                 const degree = getChordDegree(noteMidi, chordMidiNotes);
                 shape.push({ string: stringIndex, fret, degree });
-                break;
             }
         }
     });
 
     return shape;
+}
+
+// Get color for chord degree
+function getDegreeColor(degree) {
+    const colorMap = {
+        '1': '#667eea',    // Root - purple
+        '3': '#f093fb',    // Major third - pink
+        'b3': '#f093fb',   // Minor third - pink
+        '5': '#4facfe',    // Perfect fifth - blue
+        'b5': '#43e97b',   // Diminished fifth - green
+        '6': '#fa709a',    // Sixth - coral
+        'b7': '#fee140',   // Minor seventh - yellow
+        '7': '#feca57'     // Major seventh - gold
+    };
+    return colorMap[degree] || '#999';
 }
 
 // ===== MUSIC STAFF VISUALIZATION =====
