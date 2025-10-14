@@ -1,13 +1,12 @@
 {
   "name": "chorgi",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Music Theory & Chord Explorer",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx http-server -p 8000 -c-1",
+    "start": "npx http-server -p 8000 -c-1"
   },
-  "keywords": [],
+  "keywords": ["music", "chords", "theory", "guitar", "piano"],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "ISC"
 }
