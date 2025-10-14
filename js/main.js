@@ -113,10 +113,21 @@ function renderOverlayList(overlayScales) {
         const item = document.createElement('div');
         item.className = 'overlay-item';
 
-        // Color indicator
+        // Color indicator with color picker
         const colorIndicator = document.createElement('div');
         colorIndicator.className = 'overlay-color-indicator';
         colorIndicator.style.backgroundColor = scale.color;
+        colorIndicator.title = 'Click to change color';
+
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.className = 'overlay-color-input';
+        colorInput.value = scale.color;
+        colorInput.addEventListener('change', (e) => {
+            state.updateOverlayScaleColor(scale.id, e.target.value);
+        });
+
+        colorIndicator.appendChild(colorInput);
 
         // Scale name
         const name = document.createElement('div');
