@@ -326,19 +326,20 @@
 
         .help-section {
             background: #fff8f0;
-            border: 2px solid #f59e42;
+            border: 0px solid #f59e42;
             border-radius: 15px;
             padding: 0;
             margin-bottom: 0;
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s ease, padding 0.5s ease, margin-bottom 0.5s ease;
+            transition: max-height 0.5s ease, padding 0.5s ease, margin-bottom 0.5s ease, border-width 0.3s ease;
         }
 
         .help-section.visible {
-            max-height: 5000px;
+            max-height: 8000px;
             padding: 30px;
             margin-bottom: 30px;
+            border-width: 2px;
         }
 
         .help-section h3 {
@@ -625,6 +626,74 @@
                 <li><strong>Leading Tone (vii°):</strong> Strong pull to I</li>
             </ul>
 
+            <h3>Modulating to Distant Keys (No Common Chords)</h3>
+            <p>When there are <strong>no common chords</strong> between two keys (like C Major to F# Major), you need special techniques:</p>
+
+            <h4>Strategy 1: Direct/Abrupt Modulation</h4>
+            <p>Simply jump to the new key without preparation. Creates dramatic, unexpected effect.</p>
+            <div class="help-example">
+                <p><strong>C Major to F# Major (Direct):</strong></p>
+                <p>Cmaj7 → Fmaj7 → G7 → [JUMP] → F#maj7 → G#m7 → C#7</p>
+                <p><strong>Example:</strong> Many pop songs do this for the final chorus ("key change up a half step" or "truck driver modulation")</p>
+            </div>
+
+            <h4>Strategy 2: Pivot Through Intermediate Key</h4>
+            <p>Modulate to a key that shares chords with both source and destination.</p>
+            <div class="help-example">
+                <p><strong>C Major → A Minor → F# Major:</strong></p>
+                <p>• C Major and A Minor share many chords (they're relative keys)</p>
+                <p>• A Minor and F# Major share F#m7♭5 (or can use F# as dominant)</p>
+                <p><strong>Progression:</strong></p>
+                <p>Cmaj7 → Am7 (pivot to A minor) → Dm7 → E7 → Am → F#7 (dominant of F# major) → F#maj7</p>
+            </div>
+
+            <h4>Strategy 3: Common Tone Modulation</h4>
+            <p>Find a single note that exists in both keys and use it as an anchor.</p>
+            <div class="help-example">
+                <p><strong>C Major to F# Major (Common Tone):</strong></p>
+                <p>• C Major scale: C D E F G A B</p>
+                <p>• F# Major scale: F# G# A# B C# D# E#</p>
+                <p>• Common tone: <strong>B</strong> (exists in both!)</p>
+                <p><strong>Progression:</strong></p>
+                <p>Cmaj7 → Em7 (emphasize B) → [sustain B note] → Bmaj7 → C#7 → F#maj7</p>
+            </div>
+
+            <h4>Strategy 4: Chromatic Mediant Chain</h4>
+            <p>Use dramatic chromatic mediants to step toward the target key.</p>
+            <div class="help-example">
+                <p><strong>C Major → E♭ Major → G♭ Major (F# enharmonic):</strong></p>
+                <p>Each step is a minor third (chromatic mediant relationship)</p>
+                <p>Creates a dark, cinematic sound (think film scores)</p>
+            </div>
+
+            <h4>Strategy 5: Dominant Preparation</h4>
+            <p>Use the dominant (V) chord of your target key as a pivot, even if it's not in the current scale.</p>
+            <div class="help-example">
+                <p><strong>C Major to F# Major (Dominant Prep):</strong></p>
+                <p>Cmaj7 → Fmaj7 → C#7 (dominant of F#, borrowed/chromatic) → F#maj7</p>
+                <p><strong>Why it works:</strong> The C#7 creates strong tension that resolves to F# Major, even though C#7 doesn't belong to C Major</p>
+            </div>
+
+            <h4>Strategy 6: Sequential Modulation</h4>
+            <p>Modulate through the circle of fifths or other pattern.</p>
+            <div class="help-example">
+                <p><strong>C Major → G Major → D Major → A Major → E Major → B Major → F# Major:</strong></p>
+                <p>Each step is a familiar V-I relationship</p>
+                <p><strong>Example:</strong> "Giant Steps" by John Coltrane uses this concept (but with major thirds)</p>
+            </div>
+
+            <h4>Strategy 7: Enharmonic Reinterpretation</h4>
+            <p>Reinterpret a chord as functioning differently in the new key.</p>
+            <div class="help-example">
+                <p><strong>C Major to F# Major (Enharmonic):</strong></p>
+                <p>Cmaj7 → Bm7♭5 (vii in C) → [reinterpret] → Bm7♭5 can lead to F# (as iv diminished)</p>
+                <p>Use German augmented sixth chords, diminished 7ths, or other ambiguous chords</p>
+            </div>
+
+            <div class="help-tip">
+                <strong>Pro Tip:</strong> The fewer common chords between keys, the more creative you need to be! Distant modulations create drama and surprise. Use them for climactic moments, key changes, or genre-bending sections.
+            </div>
+
             <h3>Famous Examples</h3>
             <div class="help-example">
                 <h4>Relative Minor/Major</h4>
@@ -654,6 +723,26 @@
                 <h4>Tritone Substitution</h4>
                 <p>"Giant Steps" (John Coltrane) - Entire piece based on tritone relationships</p>
                 <p>Common in jazz standards and bebop</p>
+            </div>
+
+            <div class="help-example">
+                <h4>Distant Modulations (C to F#/G♭)</h4>
+                <p>"Somewhere" (West Side Story) - Uses chromatic mediants for dreamy quality</p>
+                <p>"Life on Mars" (David Bowie) - Multiple distant modulations create surreal effect</p>
+                <p>Film music - Hans Zimmer often uses tritone relationships for dramatic tension</p>
+            </div>
+
+            <h3>Quick Reference: When to Use Each Strategy</h3>
+            <div class="help-example">
+                <ul>
+                    <li><strong>Direct Modulation:</strong> Pop choruses, surprise moments, "wow" factor</li>
+                    <li><strong>Pivot Through Intermediate:</strong> Classical music, smooth transitions</li>
+                    <li><strong>Common Tone:</strong> Jazz, when you want to maintain melodic continuity</li>
+                    <li><strong>Chromatic Mediant:</strong> Film scores, epic/dramatic moments</li>
+                    <li><strong>Dominant Prep:</strong> Most versatile - works in any genre</li>
+                    <li><strong>Sequential:</strong> Building intensity, "going somewhere" feeling</li>
+                    <li><strong>Enharmonic:</strong> Classical, jazz - for sophisticated listeners</li>
+                </ul>
             </div>
         </div>
 
