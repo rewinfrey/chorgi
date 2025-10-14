@@ -14,10 +14,33 @@ import { getSuggestedModulations } from './utils/pivot-chords.js';
  */
 function init() {
     setupScaleSelectors();
+    setupHelpToggle();
     updateAllComparisons();
 
     // Listen for state changes
     state.on('scale-changed', handleScaleChange);
+}
+
+/**
+ * Setup help toggle button
+ */
+function setupHelpToggle() {
+    const helpBtn = document.getElementById('helpBtn');
+    const helpSection = document.getElementById('helpSection');
+
+    helpBtn.addEventListener('click', () => {
+        const isVisible = helpSection.classList.contains('visible');
+
+        if (isVisible) {
+            helpSection.classList.remove('visible');
+            helpBtn.classList.remove('active');
+            helpBtn.textContent = '📖 Show Guide';
+        } else {
+            helpSection.classList.add('visible');
+            helpBtn.classList.add('active');
+            helpBtn.textContent = '✕ Hide Guide';
+        }
+    });
 }
 
 /**

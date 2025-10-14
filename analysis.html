@@ -254,6 +254,116 @@
             font-style: italic;
             padding: 20px;
         }
+
+        /* Help Section */
+        .help-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .help-btn {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: 2px solid #764ba2;
+            background: white;
+            color: #764ba2;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .help-btn:hover {
+            background: #764ba2;
+            color: white;
+        }
+
+        .help-btn.active {
+            background: #764ba2;
+            color: white;
+        }
+
+        .help-section {
+            background: #fff8f0;
+            border: 2px solid #f59e42;
+            border-radius: 15px;
+            padding: 0;
+            margin-bottom: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease, margin-bottom 0.5s ease;
+        }
+
+        .help-section.visible {
+            max-height: 5000px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .help-section h3 {
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #f59e42;
+            padding-bottom: 10px;
+        }
+
+        .help-section h3:first-child {
+            margin-top: 0;
+        }
+
+        .help-section h4 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .help-section p {
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .help-section ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+            color: #444;
+            line-height: 1.8;
+        }
+
+        .help-section strong {
+            color: #764ba2;
+        }
+
+        .help-section code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #667eea;
+        }
+
+        .help-example {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .help-tip {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .help-tip strong {
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -296,6 +406,107 @@
                     </select>
                 </div>
             </div>
+        </div>
+
+        <div class="help-toggle">
+            <button id="helpBtn" class="help-btn">📖 Show Guide</button>
+        </div>
+
+        <div id="helpSection" class="help-section">
+            <h3>What Are "Common Chords"?</h3>
+            <p><strong>Common chords</strong> (also called <strong>pivot chords</strong>) are chords that appear in both scales. They're incredibly useful for <strong>modulation</strong> - smoothly transitioning from one key to another.</p>
+
+            <div class="help-example">
+                <h4>Example: C Major to G Major</h4>
+                <p><strong>C Major chords:</strong> Cmaj7, Dm7, Em7, Fmaj7, G7, Am7, Bm7♭5</p>
+                <p><strong>G Major chords:</strong> Gmaj7, Am7, Bm7, Cmaj7, D7, Em7, F#m7♭5</p>
+                <p><strong>Common chords:</strong></p>
+                <ul>
+                    <li><strong>Gmaj7</strong> - V in C Major, I in G Major</li>
+                    <li><strong>Am7</strong> - vi in C Major, ii in G Major</li>
+                    <li><strong>Em7</strong> - iii in C Major, vi in G Major</li>
+                    <li><strong>Cmaj7</strong> - I in C Major, IV in G Major</li>
+                </ul>
+            </div>
+
+            <h3>Understanding the Relationships</h3>
+
+            <h4>A Natural Minor - Relative Minor</h4>
+            <p>Shares the same key signature (same notes, different starting point). This is the closest relationship and usually has <strong>4-5 common chords</strong>.</p>
+            <div class="help-tip">
+                <strong>Why It Matters:</strong> Easiest modulation because both keys share all the same notes. Very smooth transition.
+            </div>
+
+            <h4>C Natural Minor - Parallel Minor</h4>
+            <p>Same root note but different mode. Usually has <strong>0-1 common chords</strong> because the scales use different notes.</p>
+            <div class="help-tip">
+                <strong>Why It Matters:</strong> Creates dramatic mood shift (major to minor) while keeping the same tonal center. Used for emotional contrast.
+            </div>
+
+            <h4>G Major - Dominant (V)</h4>
+            <p>Fifth degree up. One of the strongest relationships in music theory. Usually has <strong>3-4 common chords</strong>.</p>
+            <div class="help-tip">
+                <strong>Why It Matters:</strong> The V→I progression is fundamental to Western music. Creates tension that wants to resolve.
+            </div>
+
+            <h4>F Major - Subdominant (IV)</h4>
+            <p>Fourth degree up. Another fundamental relationship. Usually has <strong>3-4 common chords</strong>.</p>
+            <div class="help-tip">
+                <strong>Why It Matters:</strong> The IV chord naturally wants to move to V. Creates a relaxed, stable feel.
+            </div>
+
+            <h4>G/F Natural Minor - Modal Mixture</h4>
+            <p>Borrowing chords from parallel minor scales. Usually has <strong>0-2 common chords</strong>.</p>
+            <div class="help-tip">
+                <strong>Why It Matters:</strong> Adds color and unexpected harmonic movement. Common in pop, jazz, and film music.
+            </div>
+
+            <h3>Quality Scores Explained</h3>
+            <p>Each pivot chord gets a <strong>Quality Score (0-10)</strong> indicating how smooth the modulation would be:</p>
+            <ul>
+                <li><strong>High Scores (7-10):</strong> Smooth, natural modulations. Chord has strong function in both keys.</li>
+                <li><strong>Medium Scores (5-6):</strong> Good modulations. Chord works well in both keys.</li>
+                <li><strong>Low Scores (0-4):</strong> Weaker pivots. Still usable but less conventional.</li>
+            </ul>
+
+            <h3>How to Use This Page</h3>
+
+            <h4>For Composition:</h4>
+            <ol>
+                <li>Choose your destination key (look at relationship descriptions)</li>
+                <li>Find high-quality pivots (scores of 7-10 sound smoothest)</li>
+                <li>Plan your progression using that pivot chord</li>
+            </ol>
+
+            <div class="help-example">
+                <h4>Modulation Example:</h4>
+                <p><strong>In C Major:</strong> Cmaj7 → Fmaj7 → G7</p>
+                <p><strong>[Pivot on G7]</strong></p>
+                <p><strong>In G Major:</strong> G7 → Am7 → Gmaj7</p>
+                <p>The G7 belongs to both keys, making the transition smooth!</p>
+            </div>
+
+            <h4>For Learning:</h4>
+            <ul>
+                <li>Select different scales to see how relationships change</li>
+                <li>Notice that closely related keys have more common chords</li>
+                <li>Use the Chord Explorer to hear/see these pivot chords</li>
+            </ul>
+
+            <div class="help-tip">
+                <strong>Pro Tip:</strong> More common chords = easier, smoother modulation. The number directly relates to how many notes the scales share!
+            </div>
+
+            <h3>Musical Terms Reference</h3>
+            <ul>
+                <li><strong>Tonic (I):</strong> Home base, stable, at rest</li>
+                <li><strong>Supertonic (ii):</strong> Pre-dominant, wants to move to V</li>
+                <li><strong>Mediant (iii):</strong> Tonic expansion, stable</li>
+                <li><strong>Subdominant (IV):</strong> Pre-dominant, moves to V</li>
+                <li><strong>Dominant (V):</strong> Tension, wants to resolve to I</li>
+                <li><strong>Submediant (vi):</strong> Tonic expansion or leads to ii</li>
+                <li><strong>Leading Tone (vii°):</strong> Strong pull to I</li>
+            </ul>
         </div>
 
         <div id="analysisPanel" class="analysis-panel">
