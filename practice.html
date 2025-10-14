@@ -143,6 +143,18 @@
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 20px;
+            border: 3px solid transparent;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .piano-section.correct {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .piano-section.incorrect {
+            border-color: #f44336;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.3);
         }
 
         .piano-section h3 {

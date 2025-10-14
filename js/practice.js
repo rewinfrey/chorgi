@@ -138,6 +138,12 @@ function loadNewChallenge() {
     document.getElementById('checkBtn').disabled = false;
     document.getElementById('answerSection').style.display = 'none';
 
+    // Clear border feedback
+    const pianoSection = document.querySelector('.piano-section:not(#answerSection)');
+    if (pianoSection) {
+        pianoSection.classList.remove('correct', 'incorrect');
+    }
+
     drawInteractivePiano();
 }
 
@@ -293,6 +299,13 @@ function clearSelection() {
     gameState.showingAnswer = false;
     document.getElementById('checkBtn').disabled = false;
     document.getElementById('answerSection').style.display = 'none';
+
+    // Clear border feedback
+    const pianoSection = document.querySelector('.piano-section:not(#answerSection)');
+    if (pianoSection) {
+        pianoSection.classList.remove('correct', 'incorrect');
+    }
+
     drawInteractivePiano();
 }
 
@@ -402,6 +415,8 @@ function checkAnswer() {
 
     gameState.attempts++;
 
+    const pianoSection = document.querySelector('.piano-section:not(#answerSection)');
+
     if (isCorrect) {
         gameState.correctAnswers++;
         gameState.score += 10 + (gameState.streak * 2);
@@ -411,6 +426,10 @@ function checkAnswer() {
         const feedback = document.getElementById('feedback');
         feedback.textContent = `Correct! +${10 + ((gameState.streak - 1) * 2)} points`;
         feedback.className = 'feedback correct';
+
+        // Add green border to piano
+        pianoSection.classList.remove('incorrect');
+        pianoSection.classList.add('correct');
     } else {
         gameState.streak = 0;
 
@@ -431,6 +450,10 @@ function checkAnswer() {
 
         feedback.textContent = message;
         feedback.className = 'feedback incorrect';
+
+        // Add red border to piano
+        pianoSection.classList.remove('correct');
+        pianoSection.classList.add('incorrect');
     }
 
     if (isCorrect) {
