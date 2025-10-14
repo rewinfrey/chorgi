@@ -232,7 +232,7 @@ function drawGuitar() {
     });
 
     // Draw chord shape
-    chordShape.forEach(({ string, fret }) => {
+    chordShape.forEach(({ string, fret, degree }) => {
         const x = startX + (fret - 0.5) * fretWidth;
         const y = startY + string * stringSpacing;
 
@@ -245,11 +245,35 @@ function drawGuitar() {
         ctx.font = 'bold 12px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(fret, x, y);
+        ctx.fillText(degree, x, y);
     });
 
     document.getElementById('guitarInfo').textContent =
         `${chord.name} - First position shape`;
+}
+
+// Get the scale degree of a note within a chord (1, 3, 5, etc.)
+function getChordDegree(noteMidi, chordMidiNotes) {
+    const rootMidi = chordMidiNotes[0];
+    const noteClass = noteMidi % 12;
+    const rootClass = rootMidi % 12;
+
+    // Calculate interval in semitones
+    let interval = (noteClass - rootClass + 12) % 12;
+
+    // Map interval to chord degree
+    const degreeMap = {
+        0: '1',   // Root
+        3: 'b3',  // Minor third
+        4: '3',   // Major third
+        6: 'b5',  // Diminished fifth
+        7: '5',   // Perfect fifth
+        9: '6',   // Major sixth
+        10: 'b7', // Minor seventh
+        11: '7'   // Major seventh
+    };
+
+    return degreeMap[interval] || '?';
 }
 
 // Find a simple guitar chord shape
@@ -268,7 +292,8 @@ function findGuitarChordShape(noteNames) {
             );
 
             if (noteInChord && fret > 0) {
-                shape.push({ string: stringIndex, fret });
+                const degree = getChordDegree(noteMidi, chordMidiNotes);
+                shape.push({ string: stringIndex, fret, degree });
                 break;
             }
         }
