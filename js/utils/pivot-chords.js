@@ -73,8 +73,8 @@ export function findPivotChords(primaryRoot, primaryScale, secondaryRoot, second
                     chordName: primaryKey,  // Use the actual chord name (like "Am7")
                     primaryKey: primaryKey,
                     secondaryKey: secondaryKey,
-                    primaryFunction: getFunctionDescription(primaryKey, primaryScale),
-                    secondaryFunction: getFunctionDescription(secondaryKey, secondaryScale),
+                    primaryFunction: getFunctionDescription(primaryKey, primaryRoot, primaryScale),
+                    secondaryFunction: getFunctionDescription(secondaryKey, secondaryRoot, secondaryScale),
                     notes: primaryChord.notes,
                     intervals: primaryChord.intervals
                 });
@@ -88,13 +88,29 @@ export function findPivotChords(primaryRoot, primaryScale, secondaryRoot, second
 /**
  * Get a functional description of a chord based on its position
  */
-function getFunctionDescription(chordKey, scaleType) {
-    // Map chord positions to functional descriptions
+function getFunctionDescription(chordKey, scaleRoot, scaleType) {
     const isMajor = scaleType === 'major';
 
-    // Get degree number from the chord name
-    // This is a simplified approach - in a real implementation,
-    // we'd parse the Roman numeral more carefully
+    // Get all chords in this scale to find the position of our chord
+    const chords = generateDiatonicChords(scaleRoot, scaleType);
+
+    // Find which degree this chord is in the scale by matching the chord key
+    const chordEntries = Object.entries(chords);
+    let degreeIndex = -1;
+
+    for (let i = 0; i < chordEntries.length; i++) {
+        const [key, chord] = chordEntries[i];
+        if (key === chordKey) {
+            degreeIndex = i;
+            break;
+        }
+    }
+
+    if (degreeIndex === -1) {
+        return chordKey; // Fallback if not found
+    }
+
+    // Map degree to functional description
     const degreeNames = {
         0: { major: 'Tonic (I)', minor: 'Tonic (i)' },
         1: { major: 'Supertonic (ii)', minor: 'Supertonic (ii°)' },
@@ -105,9 +121,8 @@ function getFunctionDescription(chordKey, scaleType) {
         6: { major: 'Leading Tone (vii°)', minor: 'Subtonic (VII)' }
     };
 
-    // For now, return the chord key itself as the function
-    // In a more sophisticated version, we'd map this properly
-    return chordKey;
+    const mode = isMajor ? 'major' : 'minor';
+    return degreeNames[degreeIndex]?.[mode] || chordKey;
 }
 
 /**
@@ -117,21 +132,29 @@ function getFunctionDescription(chordKey, scaleType) {
 export function analyzePivotQuality(pivotChord, primaryScale, secondaryScale) {
     let score = 5; // Base score
 
+    const primaryFunc = pivotChord.primaryFunction;
+    const secondaryFunc = pivotChord.secondaryFunction;
+
     // Check if it's a dominant function in either key (stronger pivot)
-    if (pivotChord.primaryFunction.includes('V') ||
-        pivotChord.secondaryFunction.includes('V')) {
-        score += 2;
+    // Look for "(V)" specifically to avoid matching "IV" or "VII"
+    if (primaryFunc.includes('(V)') || secondaryFunc.includes('(V)')) {
+        score += 3;
     }
 
     // Check if it's a subdominant function (also good for pivoting)
-    if (pivotChord.primaryFunction.includes('IV') ||
-        pivotChord.secondaryFunction.includes('IV')) {
+    if (primaryFunc.includes('(IV)') || secondaryFunc.includes('(IV)')) {
+        score += 2;
+    }
+
+    // Check for supertonic function (pre-dominant)
+    if (primaryFunc.includes('(ii)') || secondaryFunc.includes('(ii)')) {
         score += 1;
     }
 
     // Check if it's a tonic in either key (weaker pivot)
-    if (pivotChord.primaryFunction.includes('I') ||
-        pivotChord.secondaryFunction.includes('I')) {
+    // Look for "(I)" at the end to avoid matching other numerals
+    if (primaryFunc.includes('(I)') || secondaryFunc.includes('(I)') ||
+        primaryFunc.includes('(i)') || secondaryFunc.includes('(i)')) {
         score -= 1;
     }
 
