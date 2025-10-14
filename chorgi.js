@@ -56,17 +56,25 @@ const CHORD_QUALITY_NAMES = {
 // Roman numeral notation
 const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 
+// Helper function to get proper note name (prefers flats for minor scales)
+function getNoteName(midiClass, preferFlats = false) {
+    const sharpNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const flatNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+    return preferFlats ? flatNames[midiClass % 12] : sharpNames[midiClass % 12];
+}
+
 // Generate diatonic chords for a scale
 function generateDiatonicChords(rootNote, scaleType) {
     const scale = SCALES[scaleType];
     const chords = {};
     const rootMidi = NOTE_TO_MIDI[rootNote];
 
+    // Use flats for minor scales
+    const preferFlats = scaleType.includes('minor');
+
     scale.intervals.forEach((interval, degreeIndex) => {
         const chordRootMidi = rootMidi + interval;
-        const chordRootNote = Object.keys(NOTE_TO_MIDI).find(
-            note => NOTE_TO_MIDI[note] === (chordRootMidi % 12)
-        );
+        const chordRootNote = getNoteName(chordRootMidi % 12, preferFlats);
 
         const quality = scale.chordQualities[degreeIndex];
         const intervals = CHORD_QUALITY_INTERVALS[quality];
@@ -76,9 +84,7 @@ function generateDiatonicChords(rootNote, scaleType) {
             const noteMidi = chordRootMidi + int;
             const octave = 4 + Math.floor((interval + int) / 12);
             const noteClass = noteMidi % 12;
-            const noteName = Object.keys(NOTE_TO_MIDI).find(
-                note => NOTE_TO_MIDI[note] === noteClass
-            );
+            const noteName = getNoteName(noteClass, preferFlats);
             return `${noteName}${octave}`;
         });
 
@@ -507,6 +513,16 @@ function getDegreeColor(degree) {
     return colorMap[degree] || '#999';
 }
 
+// Note positions on treble clef - shared constant
+const STAFF_NOTE_POSITIONS = {
+    'B3': 6, 'C4': 5, 'Db4': 5, 'C#4': 5, 'D4': 4.5, 'Eb4': 4, 'D#4': 4, 'E4': 4,
+    'F4': 3.5, 'Gb4': 3, 'F#4': 3, 'G4': 3, 'Ab4': 2.5, 'G#4': 2.5, 'A4': 2.5,
+    'Bb4': 2, 'A#4': 2, 'B4': 2,
+    'C5': 1.5, 'Db5': 1, 'C#5': 1, 'D5': 1, 'Eb5': 0.5, 'D#5': 0.5, 'E5': 0.5,
+    'F5': 0, 'Gb5': -0.5, 'F#5': -0.5, 'G5': -0.5, 'Ab5': -1, 'G#5': -1, 'A5': -1,
+    'Bb5': -1.5, 'A#5': -1.5, 'B5': -1.5, 'C6': -2
+};
+
 // ===== MUSIC STAFF VISUALIZATION =====
 function drawStaff() {
     const canvas = document.getElementById('staffCanvas');
@@ -535,10 +551,23 @@ function drawStaff() {
 
     const chord = DIATONIC_CHORDS[currentChord];
 
-    // Draw notes
+    // Calculate all note positions first to find the lowest text position
     const noteX = startX + 100;
+
+    // Find the maximum textY (lowest visual position on canvas)
+    let maxTextY = startY + 4 * lineSpacing + 40; // Start with minimum position
+    chord.notes.forEach((noteName) => {
+        const position = STAFF_NOTE_POSITIONS[noteName];
+        if (position !== undefined) {
+            const y = startY + position * lineSpacing;
+            const textY = Math.max(y + 50, startY + 4 * lineSpacing + 40);
+            maxTextY = Math.max(maxTextY, textY);
+        }
+    });
+
+    // Draw notes with aligned text position
     chord.notes.forEach((noteName, index) => {
-        drawNote(ctx, noteX + index * 70, startY, noteName, lineSpacing);
+        drawNote(ctx, noteX + index * 70, startY, noteName, lineSpacing, maxTextY);
     });
 
     document.getElementById('staffInfo').textContent =
@@ -555,19 +584,33 @@ function drawTrebleClef(ctx, x, y) {
 }
 
 // Draw a note on the staff
-function drawNote(ctx, x, baseY, noteName, lineSpacing) {
+function drawNote(ctx, x, baseY, noteName, lineSpacing, alignedTextY = null) {
     // Note positions on treble clef (middle C is C4)
     // Lines from bottom to top: E4, G4, B4, D5, F5
     // Position 0 = top line (F5), position 4 = bottom line (E4)
-    const notePositions = {
-        'B3': 6, 'C4': 5, 'D4': 4.5, 'E4': 4, 'F4': 3.5, 'G4': 3, 'A4': 2.5, 'B4': 2,
-        'C5': 1.5, 'D5': 1, 'E5': 0.5, 'F5': 0, 'G5': -0.5, 'A5': -1, 'B5': -1.5, 'C6': -2
-    };
-
-    const position = notePositions[noteName];
+    const position = STAFF_NOTE_POSITIONS[noteName];
     if (position === undefined) return;
 
     const y = baseY + position * lineSpacing;
+
+    // Check for accidentals
+    const hasFlat = noteName.includes('b') && noteName.length > 2;
+    const hasSharp = noteName.includes('#');
+
+    // Draw accidental if present
+    if (hasFlat) {
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 24px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('♭', x - 20, y);
+    } else if (hasSharp) {
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 20px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('♯', x - 20, y);
+    }
 
     // Draw note head
     ctx.fillStyle = '#667eea';
@@ -612,11 +655,14 @@ function drawNote(ctx, x, baseY, noteName, lineSpacing) {
         }
     }
 
-    // Draw note name below
+    // Draw note name below with proper padding
     ctx.fillStyle = '#666';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(noteName, x, baseY + 90);
+    ctx.textBaseline = 'top';  // Ensure consistent vertical alignment
+    // Use aligned position if provided, otherwise calculate individual position
+    const textY = alignedTextY !== null ? alignedTextY : Math.max(y + 50, baseY + 4 * lineSpacing + 40);
+    ctx.fillText(noteName, x, textY);
 }
 
 // Initialize when DOM is loaded
