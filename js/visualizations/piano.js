@@ -16,7 +16,7 @@ export function drawPiano(canvasId, chord, options = {}) {
     const ctx = canvas.getContext('2d');
 
     // Set canvas size
-    canvas.width = 800;
+    canvas.width = 700;  // 14 white keys * 50px (matches practice mode)
     canvas.height = 200;
 
     const whiteKeyWidth = 50;
@@ -31,6 +31,9 @@ export function drawPiano(canvasId, chord, options = {}) {
     // White keys pattern (C, D, E, F, G, A, B)
     const whiteKeys = [0, 2, 4, 5, 7, 9, 11];
 
+    // No offset needed - piano fills the canvas exactly
+    const offsetX = 0;
+
     const chordMidiNotes = chord.notes.map(noteToMidi);
 
     // Check if we're in overlay mode
@@ -42,7 +45,7 @@ export function drawPiano(canvasId, chord, options = {}) {
     for (let octave = 0; octave < numOctaves; octave++) {
         for (let i = 0; i < whiteKeys.length; i++) {
             const midi = startNote + octave * 12 + whiteKeys[i];
-            const x = whiteKeyIndex * whiteKeyWidth;
+            const x = offsetX + whiteKeyIndex * whiteKeyWidth;
 
             const isActive = chordMidiNotes.includes(midi);
 
@@ -88,7 +91,7 @@ export function drawPiano(canvasId, chord, options = {}) {
                 const blackKeyMidi = startNote + octave * 12 + currentWhiteKey + 1;
                 const isActive = chordMidiNotes.includes(blackKeyMidi);
 
-                const x = (whiteKeyIndex + 1) * whiteKeyWidth - blackKeyWidth / 2;
+                const x = offsetX + (whiteKeyIndex + 1) * whiteKeyWidth - blackKeyWidth / 2;
 
                 let fillColor;
                 if (hasOverlays) {
